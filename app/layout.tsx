@@ -1,12 +1,18 @@
 import "./globals.css";
 import Link from "next/link";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { AuthButton } from "@/components/auth-button";
 
 export const metadata = {
   title: "Nueclone — Social media scheduling with automation and AI",
   description: "Organize, automate, analyze and manage your social media from one place. Marketing site + dashboard shell.",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const session = await getServerSession(authOptions);
+  const authed = Boolean(session?.user);
+
   return (
     <html lang="en">
       <body>
@@ -21,6 +27,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <Link href="/reviews">Reviews</Link>
               <Link href="/dashboard" className="rounded-md bg-white/10 px-3 py-1.5 hover:bg-white/20">Dashboard</Link>
               <Link href="/api/health" className="text-ink-400">API</Link>
+              <AuthButton authed={authed} />
             </div>
             <div className="md:hidden">
               <button className="rounded-md border border-white/20 px-3 py-1.5 text-sm">Menu</button>

@@ -1,4 +1,23 @@
-export default function DashboardHome() {
+import Link from "next/link";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+
+export default async function DashboardHome() {
+  const session = await getServerSession(authOptions);
+  const authed = Boolean(session?.user);
+
+  if (!authed) {
+    return (
+      <div className="container py-16">
+        <h1 className="text-2xl font-semibold">Dashboard</h1>
+        <p className="mt-2 text-ink-300">Please sign in to access your dashboard.</p>
+        <Link href="/api/auth/signin" className="mt-6 inline-block rounded-md bg-brand-600 px-4 py-2 text-sm hover:bg-brand-500">
+          Sign in
+        </Link>
+      </div>
+    );
+  }
+
   return (
     <div className="container py-10">
       <h1 className="text-2xl font-semibold">Dashboard</h1>
