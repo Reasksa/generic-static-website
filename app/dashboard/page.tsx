@@ -30,7 +30,10 @@ export default async function DashboardHome() {
       <p className="mt-2 text-ink-300">This is your app shell. Next steps: auth, brands, channels, collections, calendar.</p>
 
       <div className="mt-8 grid gap-6 md:grid-cols-3">
-        <Card title="Brands" desc="Create a workspace for each brand or client." />
+        <Link href="/dashboard/brands" className="block rounded-xl border border-white/10 bg-white/5 p-6 hover:bg-white/10">
+          <h3 className="text-lg font-semibold">Brands</h3>
+          <p className="mt-2 text-sm text-ink-300">Create a workspace for each brand or client.</p>
+        </Link>
         <Card title="Channels" desc="Connect Instagram, TikTok, LinkedIn, X, Pinterest and more." />
         <Card title="Collections" desc="Organize content by theme, with schedules and channels." />
         <Card title="Calendar" desc="Unified calendar view of your upcoming posts." />
