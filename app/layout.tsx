@@ -3,6 +3,9 @@ import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { AuthButton } from "@/components/auth-button";
+import { prisma } from "@/lib/prisma";
+import { cookies } from "next/headers";
+import { revalidatePath } from "next/cache";
 
 export const metadata = {
   title: "Nueclone — Social media scheduling with automation and AI",
@@ -12,6 +15,30 @@ export const metadata = {
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const session = await getServerSession(authOptions);
   const authed = Boolean(session?.user);
+
+  let brands: { id: string; name: string }[] = [];
+  let currentBrandId: string | null = null;
+
+  if (authed) {
+    const userId = (session!.user as any).id as string;
+    brands = await prisma.brand.findMany({
+      where: { ownerId: userId },
+      select: { id: true, name: true },
+      orderBy: { createdAt: "asc" },
+    });
+    const cookie = cookies().get("currentBrandId")?.value ?? null;
+    currentBrandId = cookie ?? brands[0]?.id ?? null;
+  }
+
+  async function selectBrand(formData: FormData) {
+    "use server";
+    const id = (formData.get("id") as string) ?? "";
+    if (id) {
+      cookies().set("currentBrandId", id, { path: "/", httpOnly: false, sameSite: "lax" });
+      revalidatePath("/", "layout");
+      revalidatePath("/dashboard");
+    }
+  }
 
   return (
     <html lang="en">
@@ -27,6 +54,26 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               <Link href="/reviews">Reviews</Link>
               <Link href="/dashboard" className="rounded-md bg-white/10 px-3 py-1.5 hover:bg-white/20">Dashboard</Link>
               <Link href="/api/health" className="text-ink-400">API</Link>
+              {authed && brands.length > 0 && (
+                <form action={selectBrand} className="flex items-center gap-2">
+                  <label className="text-xs text-ink-500">Brand</label>
+                  <select
+                    name="id"
+                    defaultValue={currentBrandId ?? undefined}
+                    className="rounded-md border border-white/20 bg-transparent px-2 py-1 text-xs outline-none"
+                    onChange={(e) => e.currentTarget.form?.requestSubmit()}
+                  >
+                    {brands.map((b) => (
+                      <option key={b.id} value={b.id} className="bg-[var(--card)] text-white">
+                        {b.name}
+                      </option>
+                    ))}
+                  </select>
+                  <Link href="/dashboard/brands" className="rounded-md border border-white/20 px-2 py-1 text-xs hover:bg-white/10">
+                    Manage
+                  </Link>
+                </form>
+              )}
               <AuthButton authed={authed} />
             </div>
             <div className="md:hidden">

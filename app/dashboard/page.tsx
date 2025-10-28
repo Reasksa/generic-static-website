@@ -34,8 +34,14 @@ export default async function DashboardHome() {
           <h3 className="text-lg font-semibold">Brands</h3>
           <p className="mt-2 text-sm text-ink-300">Create a workspace for each brand or client.</p>
         </Link>
-        <Card title="Channels" desc="Connect Instagram, TikTok, LinkedIn, X, Pinterest and more." />
-        <Card title="Collections" desc="Organize content by theme, with schedules and channels." />
+        <Link href="/dashboard/channels" className="block rounded-xl border border-white/10 bg-white/5 p-6 hover:bg-white/10">
+          <h3 className="text-lg font-semibold">Channels</h3>
+          <p className="mt-2 text-sm text-ink-300">Connect Instagram, TikTok, LinkedIn, X, Pinterest and more.</p>
+        </Link>
+        <Link href="/dashboard/collections" className="block rounded-xl border border-white/10 bg-white/5 p-6 hover:bg-white/10">
+          <h3 className="text-lg font-semibold">Collections</h3>
+          <p className="mt-2 text-sm text-ink-300">Organize content by theme, with schedules and channels.</p>
+        </Link>
         <Card title="Calendar" desc="Unified calendar view of your upcoming posts." />
         <Card title="Media Library" desc="Upload and manage images and videos." />
         <Card title="Insights" desc="Monitor performance and top posts." />
