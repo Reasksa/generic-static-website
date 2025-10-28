@@ -13,9 +13,21 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
+    async signIn({ user }) {
+      // Ensure a default Brand exists for first-time users
+      const count = await prisma.brand.count({ where: { ownerId: user.id } });
+      if (count === 0) {
+        const name = user.name ? `${user.name}'s Brand` : "My Brand";
+        await prisma.brand.create({
+          data: { name, ownerId: user.id },
+        });
+      }
+      return true;
+    },
     async session({ session, user }) {
       if (session.user) {
         (session.user as any).id = user.id;
+        (session.user as any).onboarded = (user as any).onboarded ?? false;
       }
       return session;
     },

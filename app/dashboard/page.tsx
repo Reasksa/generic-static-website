@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { redirect } from "next/navigation";
 
 export default async function DashboardHome() {
   const session = await getServerSession(authOptions);
@@ -16,6 +17,11 @@ export default async function DashboardHome() {
         </Link>
       </div>
     );
+  }
+
+  const onboarded = Boolean((session!.user as any).onboarded);
+  if (!onboarded) {
+    redirect("/onboarding");
   }
 
   return (
